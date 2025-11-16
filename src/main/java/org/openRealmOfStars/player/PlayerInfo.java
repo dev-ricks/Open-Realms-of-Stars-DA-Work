@@ -1887,6 +1887,29 @@ public class PlayerInfo {
   }
 
   /**
+   * Set maximum tech level for this player's tech list
+   * @param maxTechLevel Maximum tech level (default 10, can be extended)
+   */
+  public void setMaxTechLevel(final int maxTechLevel) {
+    if (techList != null && techList.getMaxTechLevel() != maxTechLevel) {
+      // Recreate tech list with new max level, preserving existing techs
+      TechList newTechList = new TechList(getRace(), maxTechLevel);
+      // Copy all existing techs
+      Tech[] existingTechs = techList.getList();
+      for (Tech tech : existingTechs) {
+        newTechList.addTech(tech);
+      }
+      // Copy tech levels and focus
+      for (TechType type : TechType.values()) {
+        newTechList.setTechLevel(type, techList.getTechLevel(type));
+        newTechList.setTechFocus(type, techList.getTechFocus(type));
+        newTechList.setTechResearchPoints(type, techList.getTechResearchPoints(type));
+      }
+      this.techList = newTechList;
+    }
+  }
+
+  /**
    * Get the player fleets
    * @return fleetList which is never null
    */

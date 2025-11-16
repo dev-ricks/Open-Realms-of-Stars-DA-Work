@@ -254,6 +254,12 @@ public class GalaxyConfig {
    * Show all news in the whole galaxy.
    */
   private boolean allNews;
+
+  /**
+   * Extended tech levels beyond level 10.
+   */
+  private boolean extendedTechLevels;
+
   /**
    * Constructor for galaxy config
    */
@@ -289,6 +295,7 @@ public class GalaxyConfig {
     setEnableTutorial(true);
     setAiOnly(false);
     setAllNews(false);
+    setExtendedTechLevels(false);
     ArrayList<PlayerColor> availableColors = new ArrayList<>();
     for (PlayerColor color : PlayerColor.values()) {
       availableColors.add(color);
@@ -964,6 +971,22 @@ public class GalaxyConfig {
    */
   public void setAllNews(final boolean allNews) {
     this.allNews = allNews;
+  }
+
+  /**
+   * Is extended tech levels enabled?
+   * @return True if extended tech levels are enabled
+   */
+  public boolean isExtendedTechLevels() {
+    return extendedTechLevels;
+  }
+
+  /**
+   * Set extended tech levels flag
+   * @param extendedTechLevels Extended tech levels flag
+   */
+  public void setExtendedTechLevels(final boolean extendedTechLevels) {
+    this.extendedTechLevels = extendedTechLevels;
   }
 
 }

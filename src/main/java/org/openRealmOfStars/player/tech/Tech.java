@@ -94,7 +94,7 @@ public class Tech {
    * Create a new Tech with defaults
    * @param name Tech Name
    * @param type Tech Type
-   * @param level Tech level 1-10
+   * @param level Tech level 1-maxTechLevel (typically 10, can be extended)
    */
   public Tech(final String name, final TechType type, final int level) {
     this.name = name;
@@ -146,7 +146,7 @@ public class Tech {
 
   /**
    * Get Tech Level.
-   * @return int between 1-10
+   * @return int between 1-maxTechLevel (typically 10, can be extended)
    */
   public int getLevel() {
     return level;
@@ -154,10 +154,10 @@ public class Tech {
 
   /**
    * Set Tech level
-   * @param level between 1-10
+   * @param level between 1-maxTechLevel (typically 10, can be extended)
    */
   public void setLevel(final int level) {
-    if (level >= 1 && level < 11) {
+    if (level >= 1) {
       this.level = level;
     }
   }
