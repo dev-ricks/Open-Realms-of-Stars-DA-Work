@@ -254,6 +254,12 @@ public class GalaxyConfig {
    * Show all news in the whole galaxy.
    */
   private boolean allNews;
+
+  /**
+   * Maximum technology level. Default is 10, but can be extended for longer games.
+   */
+  private int maxTechLevel;
+
   /**
    * Constructor for galaxy config
    */
@@ -289,6 +295,7 @@ public class GalaxyConfig {
     setEnableTutorial(true);
     setAiOnly(false);
     setAllNews(false);
+    setMaxTechLevel(10);
     ArrayList<PlayerColor> availableColors = new ArrayList<>();
     for (PlayerColor color : PlayerColor.values()) {
       availableColors.add(color);
@@ -964,6 +971,28 @@ public class GalaxyConfig {
    */
   public void setAllNews(final boolean allNews) {
     this.allNews = allNews;
+  }
+
+  /**
+   * Get maximum technology level
+   * @return Maximum technology level (default 10)
+   */
+  public int getMaxTechLevel() {
+    return maxTechLevel;
+  }
+
+  /**
+   * Set maximum technology level
+   * @param maxTechLevel Maximum technology level (minimum 10, maximum 50)
+   */
+  public void setMaxTechLevel(final int maxTechLevel) {
+    if (maxTechLevel < 10) {
+      this.maxTechLevel = 10;
+    } else if (maxTechLevel > 50) {
+      this.maxTechLevel = 50;
+    } else {
+      this.maxTechLevel = maxTechLevel;
+    }
   }
 
 }

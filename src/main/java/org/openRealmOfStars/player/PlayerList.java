@@ -231,7 +231,8 @@ public class PlayerList {
             getPossibleStartingScenariosRegular(galaxyConfig.getRace(i)));
       }
       PlayerInfo info = new PlayerInfo(galaxyConfig.getRace(i),
-          maxPlayers, i, boardIndex, scenario);
+          maxPlayers, i, boardIndex, scenario,
+          galaxyConfig.getMaxTechLevel());
       info.setGovernment(galaxyConfig.getPlayerGovernment(i));
       info.setEmpireName(galaxyConfig.getPlayerName(i));
       info.setElderRealm(galaxyConfig.getPlayerElderRealm(i));
@@ -251,7 +252,8 @@ public class PlayerList {
       PlayerInfo info = new PlayerInfo(
           SpaceRaceFactory.createOne(SpaceRaceFactory.SPACE_PIRATE), maxPlayers,
           index, boardIndex, StartingScenarioFactory.create(
-              ScenarioIds.TEMPERATE_HUMID_SIZE12));
+              ScenarioIds.TEMPERATE_HUMID_SIZE12),
+          galaxyConfig.getMaxTechLevel());
       info.setBoard(true);
       info.setGovernment(GovernmentFactory.createOne("PIRATES"));
       info.setEmpireName("Space pirates");
@@ -280,7 +282,8 @@ public class PlayerList {
       PlayerInfo info = new PlayerInfo(
           SpaceRaceFactory.createOne(SpaceRaceFactory.SPACE_MONSTER),
           maxPlayers, index, boardIndex, StartingScenarioFactory.create(
-              ScenarioIds.TEMPERATE_HUMID_SIZE12));
+              ScenarioIds.TEMPERATE_HUMID_SIZE12),
+          galaxyConfig.getMaxTechLevel());
       info.setBoard(true);
       info.setGovernment(GovernmentFactory.createOne("PIRATES"));
       info.setEmpireName("Space monsters");

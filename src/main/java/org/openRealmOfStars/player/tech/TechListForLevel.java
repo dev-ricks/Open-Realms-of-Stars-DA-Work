@@ -45,7 +45,7 @@ public class TechListForLevel {
    */
   public TechListForLevel(final int level) {
     techList = new ArrayList<>();
-    if (level >= 1 && level < 10) {
+    if (level >= 1 && level <= 50) {
       this.level = level;
     } else {
       this.level = 1;
@@ -75,7 +75,7 @@ public class TechListForLevel {
   public TechListForLevel(final int level, final TechType type,
       final DataInputStream dis) throws IOException {
     techList = new ArrayList<>();
-    if (level >= 1 && level < 10) {
+    if (level >= 1 && level <= 50) {
       this.level = level;
     } else {
       this.level = 1;
@@ -139,7 +139,7 @@ public class TechListForLevel {
 
   /**
    * Get Tech Level
-   * @return Level 1-10
+   * @return Level 1-max (can be extended beyond 10)
    */
   public int getLevel() {
     return level;
