@@ -171,6 +171,11 @@ public class GalaxyCreationView extends BlackPanel {
   private SpaceCheckBox allNewsSubscribed;
 
   /**
+   * Extended tech levels checkbox
+   */
+  private SpaceCheckBox extendedTechLevels;
+
+  /**
    * Galaxy config
    */
   private GalaxyConfig config;
@@ -480,6 +485,17 @@ public class GalaxyCreationView extends BlackPanel {
         + "Without it only your governor and commander death news are shown."
         + "</html>");
     info.add(allNewsSubscribed);
+    info.add(Box.createRigidArea(new Dimension(5, 5)));
+    extendedTechLevels = new SpaceCheckBox("Extended tech levels (beyond level 10)");
+    extendedTechLevels.setSelected(this.config.isExtendedTechLevels());
+    extendedTechLevels.addActionListener(listener);
+    extendedTechLevels.setActionCommand(GameCommands.COMMAND_GALAXY_SETUP);
+    extendedTechLevels.setAlignmentX(CENTER_ALIGNMENT);
+    extendedTechLevels.setToolTipText("<html>Enable technology research beyond level 10.<br>"
+        + "This allows weapons, armors, shields, engines and power sources<br>"
+        + "to continue improving beyond the standard maximum level.<br>"
+        + "Useful for very long games where research would otherwise become obsolete.</html>");
+    info.add(extendedTechLevels);
     info.add(Box.createRigidArea(new Dimension(5, 5)));
     return info;
   }
@@ -805,6 +821,7 @@ public class GalaxyCreationView extends BlackPanel {
       config.setDifficultyLevel(AiDifficulty.getByIndex(
           comboDifficulty.getSelectedIndex()));
       config.setAllNews(allNewsSubscribed.isSelected());
+      config.setExtendedTechLevels(extendedTechLevels.isSelected());
       for (int i = 0; i < config.getMaxPlayers(); i++) {
         config.setPlayerDifficult(i, config.getDifficultyLevel());
       }

@@ -1867,10 +1867,11 @@ public class AITurnView extends BlackPanel {
   private static void updateSinglePirateTech(final PlayerInfo pirates,
       final PirateDifficultLevel difficulty, final TechType type) {
     int level = pirates.getTechList().getTechLevel(type);
+    int maxTechLevel = pirates.getTechList().getMaxTechLevel();
     if (pirates.getTechList().isUpgradeable(type)) {
       level++;
-      if (level > 10) {
-        level = 10;
+      if (level > maxTechLevel) {
+        level = maxTechLevel;
       }
     }
     // Very easy does not get tech upgrades

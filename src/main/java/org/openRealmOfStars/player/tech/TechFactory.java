@@ -512,7 +512,8 @@ public final class TechFactory {
    */
   public static Tech findTech(final String name) {
     Tech tech = null;
-    for (int i = 1; i < 11; i++) {
+    // Search up to level 20 to support extended tech levels
+    for (int i = 1; i <= 20; i++) {
       tech = createCombatTech(name, i);
       if (tech != null) {
         return tech;
@@ -588,7 +589,13 @@ public final class TechFactory {
           COMBAT_RARE_TECH_LEVEL10_NAMES);
       break;
     default:
-      return null;
+      // For extended levels, check if name matches extended tech pattern
+      if (level > 10) {
+        list = generateExtendedCombatTechs(level);
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -725,7 +732,13 @@ public final class TechFactory {
       list = DEFENSE_TECH_LEVEL10_NAMES;
       break;
     default:
-      return null;
+      // For extended levels, check if name matches extended tech pattern
+      if (level > 10) {
+        list = generateExtendedDefenseTechs(level);
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -865,7 +878,13 @@ public final class TechFactory {
       list = HULL_TECH_LEVEL10_NAMES;
       break;
     default:
-      return null;
+      // For extended levels, reuse level 10 techs
+      if (level > 10) {
+        list = HULL_TECH_LEVEL10_NAMES;
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -972,7 +991,13 @@ public final class TechFactory {
       list = IMPROVEMENT_TECH_LEVEL10_NAMES;
       break;
     default:
-      return null;
+      // For extended levels, reuse level 10 techs
+      if (level > 10) {
+        list = IMPROVEMENT_TECH_LEVEL10_NAMES;
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -1136,7 +1161,13 @@ public final class TechFactory {
           PROPULSION_RARE_TECH_LEVEL10_NAMES);
       break;
     default:
-      return null;
+      // For extended levels, check if name matches extended tech pattern
+      if (level > 10) {
+        list = generateExtendedPropulsionTechs(level);
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -1213,7 +1244,13 @@ public final class TechFactory {
       list = ELECTRONICS_TECH_LEVEL10_NAMES;
       break;
     default:
-      return null;
+      // For extended levels, check if name matches extended tech pattern
+      if (level > 10) {
+        list = generateExtendedElectronicsTechs(level);
+      } else {
+        return null;
+      }
+      break;
     }
     for (int i = 0; i < list.length; i++) {
       String techName = list[i];
@@ -1648,6 +1685,70 @@ public final class TechFactory {
   }
 
   /**
+   * Generate extended combat techs for levels beyond 10
+   * @param level Tech level
+   * @return Array of tech names
+   */
+  private static String[] generateExtendedCombatTechs(final int level) {
+    ArrayList<String> techs = new ArrayList<>();
+    // Generate Mk versions of weapons for extended levels
+    techs.add("Antimatter beam Mk" + level);
+    techs.add("Massdrive Mk" + level);
+    techs.add("Photon torpedo Mk" + level);
+    techs.add("ECM torpedo Mk" + (level - 2));
+    techs.add("HE missile Mk" + (level - 2));
+    techs.add("Callisto multicannon Mk" + (level - 7));
+    return techs.toArray(new String[techs.size()]);
+  }
+
+  /**
+   * Generate extended defense techs for levels beyond 10
+   * @param level Tech level
+   * @return Array of tech names
+   */
+  private static String[] generateExtendedDefenseTechs(final int level) {
+    ArrayList<String> techs = new ArrayList<>();
+    // Generate Mk versions of shields and armor
+    techs.add("Shield Mk" + level);
+    techs.add("Armor plating Mk" + level);
+    if (level >= 12) {
+      techs.add("Jammer Mk" + (level - 6));
+    }
+    return techs.toArray(new String[techs.size()]);
+  }
+
+  /**
+   * Generate extended propulsion techs for levels beyond 10
+   * @param level Tech level
+   * @return Array of tech names
+   */
+  private static String[] generateExtendedPropulsionTechs(final int level) {
+    ArrayList<String> techs = new ArrayList<>();
+    // Generate Mk versions of engines and power sources
+    techs.add("Warp drive Mk" + (level - 2));
+    techs.add("Hyper drive Mk" + (level - 2));
+    techs.add("Impulse engine Mk" + (level - 6));
+    if (level >= 11) {
+      techs.add("Zero-point source Mk" + (level - 8));
+    }
+    return techs.toArray(new String[techs.size()]);
+  }
+
+  /**
+   * Generate extended electronics techs for levels beyond 10
+   * @param level Tech level
+   * @return Array of tech names
+   */
+  private static String[] generateExtendedElectronicsTechs(final int level) {
+    ArrayList<String> techs = new ArrayList<>();
+    // Generate Mk versions of electronics
+    techs.add("Cloaking device Mk" + (level - 4));
+    techs.add("Planetary scanner Mk" + (level - 4));
+    techs.add("Espionage module Mk" + (level - 4));
+    return techs.toArray(new String[techs.size()]);
+  }
+
+  /**
    * Get String list of tech by type and level.
    * This will now depend on space race.
    * @param type The tech type
@@ -1692,7 +1793,8 @@ public final class TechFactory {
         possibleTechs = COMBAT_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        possibleTechs = generateExtendedCombatTechs(level);
+        break;
       }
       break;
     case Defense:
@@ -1728,7 +1830,8 @@ public final class TechFactory {
         possibleTechs = DEFENSE_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        possibleTechs = generateExtendedDefenseTechs(level);
+        break;
       }
       break;
     case Hulls:
@@ -1764,7 +1867,9 @@ public final class TechFactory {
         possibleTechs = HULL_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        // For hulls beyond level 10, reuse level 10 techs
+        possibleTechs = HULL_TECH_LEVEL10_NAMES;
+        break;
       }
       break;
     case Improvements:
@@ -1800,7 +1905,9 @@ public final class TechFactory {
         possibleTechs = IMPROVEMENT_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        // For buildings beyond level 10, reuse level 10 techs
+        possibleTechs = IMPROVEMENT_TECH_LEVEL10_NAMES;
+        break;
       }
       break;
     case Propulsion:
@@ -1836,7 +1943,8 @@ public final class TechFactory {
         possibleTechs = PROPULSION_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        possibleTechs = generateExtendedPropulsionTechs(level);
+        break;
       }
       break;
     case Electrics:
@@ -1872,7 +1980,8 @@ public final class TechFactory {
         possibleTechs = ELECTRONICS_TECH_LEVEL10_NAMES;
         break;
       default:
-        throw new IllegalArgumentException("Tech level is beyond 10!");
+        possibleTechs = generateExtendedElectronicsTechs(level);
+        break;
       }
       break;
     default:

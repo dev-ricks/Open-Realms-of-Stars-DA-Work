@@ -237,6 +237,10 @@ public class PlayerList {
       info.setElderRealm(galaxyConfig.getPlayerElderRealm(i));
       info.setAiDifficulty(galaxyConfig.getDifficulty(i));
       info.setColor(galaxyConfig.getPlayerColor(i));
+      // Set max tech level if extended tech levels are enabled
+      if (galaxyConfig.isExtendedTechLevels()) {
+        info.setMaxTechLevel(20); // Allow up to level 20 when extended
+      }
       randomListOfColors.remove(galaxyConfig.getPlayerColor(i));
       if (i == 0 && !galaxyConfig.isAiOnly()) {
         info.setHuman(true);
@@ -255,6 +259,10 @@ public class PlayerList {
       info.setBoard(true);
       info.setGovernment(GovernmentFactory.createOne("PIRATES"));
       info.setEmpireName("Space pirates");
+      // Set max tech level if extended tech levels are enabled
+      if (galaxyConfig.isExtendedTechLevels()) {
+        info.setMaxTechLevel(20); // Allow up to level 20 when extended
+      }
       PirateDifficultLevel difficultyLevel = galaxyConfig
           .getSpacePiratesDifficulty();
       if (difficultyLevel == PirateDifficultLevel.EASY
@@ -285,6 +293,10 @@ public class PlayerList {
       info.setGovernment(GovernmentFactory.createOne("PIRATES"));
       info.setEmpireName("Space monsters");
       info.setAiDifficulty(AiDifficulty.WEAK);
+      // Set max tech level if extended tech levels are enabled
+      if (galaxyConfig.isExtendedTechLevels()) {
+        info.setMaxTechLevel(20); // Allow up to level 20 when extended
+      }
       var color = DiceGenerator.pickRandom(randomListOfColors);
       info.setColor(color);
       players.addPlayer(info);
