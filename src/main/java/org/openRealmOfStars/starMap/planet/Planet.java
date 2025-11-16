@@ -1937,7 +1937,10 @@ public class Planet {
               }
             }
             if (!built && !exceedRadiation()) {
-              result.add(tmp);
+              // Check if building can be built on this planet (planet requirements)
+              if (tmp.canBuildOnPlanet(this)) {
+                result.add(tmp);
+              }
             } else if (!built && (tmp.getName().equals("Radiation dampener")
                 || tmp.getName().equals("Radiation well"))) {
               // Radiation well and dampener can be built even planet has
@@ -1946,7 +1949,10 @@ public class Planet {
             }
           } else {
             if (!exceedRadiation()) {
-              result.add(tmp);
+              // Check if building can be built on this planet (planet requirements)
+              if (tmp.canBuildOnPlanet(this)) {
+                result.add(tmp);
+              }
             }
           }
         }
