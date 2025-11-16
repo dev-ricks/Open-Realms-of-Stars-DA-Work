@@ -140,5 +140,18 @@
     "iconId": "Research",
     "reseBonus": 1,
     "name": "Ancient lab"
+  },
+  {
+    "description": "Advanced research facility utilizing cutting-edge quantum computing and experimental technologies. Requires substantial infrastructure and population.",
+    "type": "RESEARCH",
+    "metalCost": 40,
+    "prodCost": 50,
+    "iconId": "Research",
+    "singleAllowed": true,
+    "reseBonus": 3,
+    "maintenanceCost": 1.0,
+    "minPlanetSize": 10,
+    "minPopulation": 5,
+    "name": "Advanced research lab"
   }
 ]

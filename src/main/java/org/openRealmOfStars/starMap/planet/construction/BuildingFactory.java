@@ -128,6 +128,19 @@ class BuildingLoader extends DataLoader<String, Building> {
       tmp.setBroadcaster(jobj.optBoolean("broadcaster", false));
       tmp.setOrbitalElevator(jobj.optBoolean("orbitalElevator", false));
 
+      // Planet requirements (for extended tech buildings)
+      tmp.setMinPlanetSize(jobj.optInt("minPlanetSize", 0));
+      tmp.setMinPopulation(jobj.optInt("minPopulation", 0));
+      if (jobj.has("allowedWorldTypes")) {
+        var worldTypeArray = jobj.getJSONArray("allowedWorldTypes");
+        var worldTypes = new org.openRealmOfStars.starMap.planet.enums.WorldType[worldTypeArray.length()];
+        for (int i = 0; i < worldTypeArray.length(); i++) {
+          worldTypes[i] = worldTypeArray.getEnum(
+              org.openRealmOfStars.starMap.planet.enums.WorldType.class, i);
+        }
+        tmp.setAllowedWorldTypes(worldTypes);
+      }
+
       return Optional.of(tmp);
     } catch (JSONException e) {
       ErrorLogger.log(e);

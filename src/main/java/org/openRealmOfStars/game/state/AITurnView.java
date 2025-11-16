@@ -1869,9 +1869,7 @@ public class AITurnView extends BlackPanel {
     int level = pirates.getTechList().getTechLevel(type);
     if (pirates.getTechList().isUpgradeable(type)) {
       level++;
-      if (level > 10) {
-        level = 10;
-      }
+      // Level cap is handled by TechList's maxTechLevel, no need to cap here
     }
     // Very easy does not get tech upgrades
     if (difficulty == PirateDifficultLevel.EASY

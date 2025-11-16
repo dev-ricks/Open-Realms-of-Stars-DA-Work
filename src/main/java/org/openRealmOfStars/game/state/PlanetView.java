@@ -52,6 +52,8 @@ import org.openRealmOfStars.gui.panels.WorkerProductionPanel;
 import org.openRealmOfStars.gui.util.GuiFonts;
 import org.openRealmOfStars.gui.util.GuiStatics;
 import org.openRealmOfStars.player.PlayerInfo;
+import org.openRealmOfStars.player.message.Message;
+import org.openRealmOfStars.player.message.MessageType;
 import org.openRealmOfStars.player.race.SpaceRace;
 import org.openRealmOfStars.player.race.trait.TraitIds;
 import org.openRealmOfStars.starMap.StarMap;
@@ -876,8 +878,26 @@ public class PlanetView extends BlackPanel {
     }
     if (arg0.getActionCommand()
         .equalsIgnoreCase(GameCommands.COMMAND_PRODUCTION_LIST)) {
-      planet.setUnderConstruction(
-          (Construction) constructionSelect.getSelectedItem());
+      Construction selectedConstruction = (Construction) constructionSelect.getSelectedItem();
+      // Validate building requirements if it's a Building
+      if (selectedConstruction instanceof Building) {
+        Building building = (Building) selectedConstruction;
+        if (!building.canBuildOnPlanet(planet)) {
+          // Show error message
+          String failureReason = building.getBuildRequirementFailureReason(planet);
+          if (failureReason != null && info != null) {
+            Message msg = new Message(MessageType.INFORMATION,
+                "Cannot build " + building.getName() + " on " + planet.getName()
+                    + ": " + failureReason,
+                Icons.getIconByName(Icons.ICON_RESEARCH));
+            info.getMsgList().addNewMessage(msg);
+          }
+          SoundPlayer.playMenuSound();
+          updatePanel();
+          return; // Don't set construction if requirements not met
+        }
+      }
+      planet.setUnderConstruction(selectedConstruction);
       SoundPlayer.playMenuSound();
       updatePanel();
     }

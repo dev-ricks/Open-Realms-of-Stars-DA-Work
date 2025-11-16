@@ -37,9 +37,13 @@ import org.openRealmOfStars.gui.panels.BlackPanel;
 import org.openRealmOfStars.gui.util.GuiFonts;
 import org.openRealmOfStars.gui.util.GuiStatics;
 import org.openRealmOfStars.player.PlayerInfo;
+import org.openRealmOfStars.player.message.Message;
+import org.openRealmOfStars.player.message.MessageType;
+import org.openRealmOfStars.gui.icons.Icons;
 import org.openRealmOfStars.starMap.StarMap;
 import org.openRealmOfStars.starMap.StarMapUtilities;
 import org.openRealmOfStars.starMap.planet.Planet;
+import org.openRealmOfStars.starMap.planet.construction.Building;
 import org.openRealmOfStars.starMap.planet.construction.Construction;
 
 /**
@@ -209,6 +213,23 @@ public class PlanetListView extends BlackPanel {
         Planet planet = planets[index];
         Construction building = planetInfo[index].getSelectedConstruction();
         if (building != null) {
+          // Validate building requirements if it's a Building
+          if (building instanceof Building) {
+            Building buildingObj = (Building) building;
+            if (!buildingObj.canBuildOnPlanet(planet)) {
+              // Show error message
+              String failureReason = buildingObj.getBuildRequirementFailureReason(planet);
+              if (failureReason != null && info != null) {
+                Message msg = new Message(MessageType.INFORMATION,
+                    "Cannot build " + buildingObj.getName() + " on " + planet.getName()
+                        + ": " + failureReason,
+                    Icons.getIconByName(Icons.ICON_RESEARCH));
+                info.getMsgList().addNewMessage(msg);
+              }
+              SoundPlayer.playMenuSound();
+              return; // Don't set construction if requirements not met
+            }
+          }
           planet.setUnderConstruction(building);
           planetInfo[index].updateTimeEstimate();
           SoundPlayer.playMenuSound();

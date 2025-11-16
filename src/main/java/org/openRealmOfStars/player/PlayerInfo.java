@@ -314,8 +314,23 @@ public class PlayerInfo {
   public PlayerInfo(final SpaceRace race, final int maxPlayers,
       final int index, final int boardPlayerIndex,
       final StartingScenario scenario) {
+    this(race, maxPlayers, index, boardPlayerIndex, scenario, 10);
+  }
+
+  /**
+   * Constructor player info. This can be used for game playing.
+   * @param race Space Race for player
+   * @param maxPlayers Maximum number of players when game is created
+   * @param index Player's index in list when creating the player
+   * @param boardPlayerIndex Board player index
+   * @param scenario Starting scenario
+   * @param maxTechLevel Maximum technology level
+   */
+  public PlayerInfo(final SpaceRace race, final int maxPlayers,
+      final int index, final int boardPlayerIndex,
+      final StartingScenario scenario, final int maxTechLevel) {
     setBackgroundStory("");
-    setTechList(new TechList(race));
+    setTechList(new TechList(race, maxTechLevel));
     strategy = WinningStrategy.GENERIC;
     this.msgList = new MessageList();
     shipStatList = new ArrayList<>();
