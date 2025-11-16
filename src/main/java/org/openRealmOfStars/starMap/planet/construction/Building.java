@@ -85,6 +85,13 @@ public class Building extends Construction {
   /** Wild life power. */
   private int wildLifePower;
 
+  /** Minimum planet size required (0 = no requirement) */
+  private int minPlanetSize;
+  /** Minimum population required (0 = no requirement) */
+  private int minPopulation;
+  /** Allowed world types (null = all types allowed) */
+  private org.openRealmOfStars.starMap.planet.enums.WorldType[] allowedWorldTypes;
+
   /**
    * Construct building for planet
    * @param name Unique Building name
@@ -117,6 +124,9 @@ public class Building extends Construction {
     this.setBroadcaster(false);
     this.setWildLifePower(0);
     this.setAncientArtifactResearch(0);
+    this.minPlanetSize = 0;
+    this.minPopulation = 0;
+    this.allowedWorldTypes = null;
   }
 
   /**
@@ -268,6 +278,40 @@ public class Building extends Construction {
       sb.append(getMaintenanceCost());
     }
     sb.append("\n");
+    // Show planet requirements
+    if (getMinPlanetSize() > 0 || getMinPopulation() > 0
+        || getAllowedWorldTypes() != null) {
+      sb.append("Requirements: ");
+      boolean reqSpace = false;
+      if (getMinPlanetSize() > 0) {
+        sb.append("Planet size ");
+        sb.append(getMinPlanetSize());
+        sb.append("+");
+        reqSpace = true;
+      }
+      if (getMinPopulation() > 0) {
+        if (reqSpace) {
+          sb.append(", ");
+        }
+        sb.append("Population ");
+        sb.append(getMinPopulation());
+        sb.append("+");
+        reqSpace = true;
+      }
+      if (getAllowedWorldTypes() != null && getAllowedWorldTypes().length > 0) {
+        if (reqSpace) {
+          sb.append(", ");
+        }
+        sb.append("World type: ");
+        for (int i = 0; i < getAllowedWorldTypes().length; i++) {
+          if (i > 0) {
+            sb.append("/");
+          }
+          sb.append(getAllowedWorldTypes()[i].toString());
+        }
+      }
+      sb.append("\n");
+    }
     boolean space = false;
     if (getFarmBonus() > 0) {
       sb.append("Food: +");
@@ -654,5 +698,89 @@ public class Building extends Construction {
    */
   public void setAncientArtifactResearch(final int ancientArtifactResearch) {
     this.ancientArtifactResearch = ancientArtifactResearch;
+  }
+
+  /**
+   * Get minimum planet size required for this building.
+   * @return Minimum planet size (0 = no requirement)
+   */
+  public int getMinPlanetSize() {
+    return minPlanetSize;
+  }
+
+  /**
+   * Set minimum planet size required for this building.
+   * @param minPlanetSize Minimum planet size (0 = no requirement)
+   */
+  public void setMinPlanetSize(final int minPlanetSize) {
+    this.minPlanetSize = minPlanetSize;
+  }
+
+  /**
+   * Get minimum population required for this building.
+   * @return Minimum population (0 = no requirement)
+   */
+  public int getMinPopulation() {
+    return minPopulation;
+  }
+
+  /**
+   * Set minimum population required for this building.
+   * @param minPopulation Minimum population (0 = no requirement)
+   */
+  public void setMinPopulation(final int minPopulation) {
+    this.minPopulation = minPopulation;
+  }
+
+  /**
+   * Get allowed world types for this building.
+   * @return Array of allowed world types (null = all types allowed)
+   */
+  public org.openRealmOfStars.starMap.planet.enums.WorldType[] getAllowedWorldTypes() {
+    return allowedWorldTypes;
+  }
+
+  /**
+   * Set allowed world types for this building.
+   * @param allowedWorldTypes Array of allowed world types (null = all types allowed)
+   */
+  public void setAllowedWorldTypes(
+      final org.openRealmOfStars.starMap.planet.enums.WorldType[] allowedWorldTypes) {
+    this.allowedWorldTypes = allowedWorldTypes;
+  }
+
+  /**
+   * Check if this building can be built on the given planet.
+   * @param planet Planet to check
+   * @return True if building can be built, false otherwise
+   */
+  public boolean canBuildOnPlanet(final org.openRealmOfStars.starMap.planet.Planet planet) {
+    if (planet == null) {
+      return false;
+    }
+    // Check planet size requirement
+    if (minPlanetSize > 0 && planet.getGroundSize() < minPlanetSize) {
+      return false;
+    }
+    // Check population requirement
+    if (minPopulation > 0 && planet.getTotalPopulation() < minPopulation) {
+      return false;
+    }
+    // Check world type requirement
+    if (allowedWorldTypes != null && allowedWorldTypes.length > 0) {
+      boolean typeAllowed = false;
+      org.openRealmOfStars.starMap.planet.enums.WorldType planetWorldType =
+          planet.getPlanetType().getWorldType();
+      for (org.openRealmOfStars.starMap.planet.enums.WorldType allowedType : allowedWorldTypes) {
+        if (planetWorldType == allowedType) {
+          typeAllowed = true;
+          break;
+        }
+      }
+      if (!typeAllowed) {
+        return false;
+      }
+    }
+    return true;
   }
 }

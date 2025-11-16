@@ -153,5 +153,48 @@
     "singleAllowed": true,
     "maintenanceCost": 1,
     "name": "Radiation dampener"
+  },
+  {
+    "description": "Quantum-powered manufacturing facility utilizing quantum entanglement for instant material manipulation. Requires large planet and developed population.",
+    "type": "FACTORY",
+    "metalCost": 50,
+    "prodCost": 60,
+    "iconId": "Factory",
+    "singleAllowed": true,
+    "factBonus": 3,
+    "maintenanceCost": 1.5,
+    "minPlanetSize": 11,
+    "minPopulation": 6,
+    "allowedWorldTypes": ["BARRENWORLD", "VOLCANICWORLD", "DESERTWORLD"],
+    "name": "Quantum factory"
+  },
+  {
+    "description": "Planet-scale nanobot manufacturing facility capable of producing vast quantities of materials through molecular assembly. Requires very large planet and substantial population.",
+    "type": "FACTORY",
+    "metalCost": 60,
+    "prodCost": 80,
+    "iconId": "Factory",
+    "singleAllowed": true,
+    "factBonus": 4,
+    "maintenanceCost": 2.0,
+    "minPlanetSize": 12,
+    "minPopulation": 7,
+    "allowedWorldTypes": ["BARRENWORLD", "VOLCANICWORLD", "DESERTWORLD"],
+    "name": "Nano factory"
+  },
+  {
+    "description": "Massive orbital structure component for harnessing stellar energy. Part of a planet-scale megastructure project. Requires huge planet and large population.",
+    "type": "FACTORY",
+    "metalCost": 80,
+    "prodCost": 100,
+    "iconId": "Factory",
+    "singleAllowed": false,
+    "factBonus": 2,
+    "reseBonus": 1,
+    "maintenanceCost": 2.5,
+    "minPlanetSize": 13,
+    "minPopulation": 8,
+    "allowedWorldTypes": ["BARRENWORLD", "DESERTWORLD"],
+    "name": "Dyson sphere component"
   }
 ]
