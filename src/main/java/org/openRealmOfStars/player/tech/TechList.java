@@ -47,6 +47,11 @@ public class TechList {
    * Maximum number of tech levels
    */
   public static final int MAX_TECH_LEVEL = 10;
+  
+  /**
+   * Maximum number of extended tech levels (when enabled)
+   */
+  public static final int MAX_EXTENDED_TECH_LEVEL = 20;
 
   /**
    * Maximum number of tech types
@@ -78,16 +83,32 @@ public class TechList {
    * SpaceRace for techlist.
    */
   private SpaceRace race;
+  
+  /**
+   * Whether extended tech levels are enabled
+   */
+  private boolean extendedTechLevelsEnabled;
 
   /**
    * Constructor for TechList
    * @param race SpaceRace for correct tech tree
    */
   public TechList(final SpaceRace race) {
+    this(race, false);
+  }
+  
+  /**
+   * Constructor for TechList with extended tech levels option
+   * @param race SpaceRace for correct tech tree
+   * @param extendedTechLevelsEnabled Whether extended tech levels are enabled
+   */
+  public TechList(final SpaceRace race, final boolean extendedTechLevelsEnabled) {
     this.race = race;
-    techList = new TechListForLevel[TechType.values().length][MAX_TECH_LEVEL];
+    this.extendedTechLevelsEnabled = extendedTechLevelsEnabled;
+    int maxLevel = extendedTechLevelsEnabled ? MAX_EXTENDED_TECH_LEVEL : MAX_TECH_LEVEL;
+    techList = new TechListForLevel[TechType.values().length][maxLevel];
     for (int i = 0; i < MAX_TECH_TYPES; i++) {
-      for (int j = 0; j < MAX_TECH_LEVEL; j++) {
+      for (int j = 0; j < maxLevel; j++) {
         techList[i][j] = new TechListForLevel(j + 1);
       }
     }
@@ -104,6 +125,22 @@ public class TechList {
     techFocus[TechType.Propulsion.getIndex()] = 16;
     techFocus[TechType.Electrics.getIndex()] = 16;
   }
+  
+  /**
+   * Get maximum tech level based on configuration
+   * @return Maximum tech level
+   */
+  private int getMaxTechLevel() {
+    return extendedTechLevelsEnabled ? MAX_EXTENDED_TECH_LEVEL : MAX_TECH_LEVEL;
+  }
+  
+  /**
+   * Check if extended tech levels are enabled
+   * @return True if extended tech levels are enabled
+   */
+  public boolean isExtendedTechLevelsEnabled() {
+    return extendedTechLevelsEnabled;
+  }
 
   /**
    * Get number of scientific achievements realm has.
@@ -111,8 +148,9 @@ public class TechList {
    */
   public int getNumberOfScientificAchievements() {
     int result = 0;
+    int maxLevel = getMaxTechLevel();
     for (int i = 0; i < MAX_TECH_TYPES; i++) {
-      for (int j = 0; j < MAX_TECH_LEVEL; j++) {
+      for (int j = 0; j < maxLevel; j++) {
         for (Tech tech : techList[i][j].getList()) {
           if (tech.getImprovement() != null) {
             Building building = BuildingFactory.createByName(
@@ -136,8 +174,9 @@ public class TechList {
    * @throws IOException if there is any problem with DataOutputStream
    */
   public void saveTechList(final DataOutputStream dos) throws IOException {
+    int maxLevel = getMaxTechLevel();
     for (int i = 0; i < MAX_TECH_TYPES; i++) {
-      for (int j = 0; j < MAX_TECH_LEVEL; j++) {
+      for (int j = 0; j < maxLevel; j++) {
         techList[i][j].saveTechListForLevel(dos);
       }
     }
@@ -146,6 +185,7 @@ public class TechList {
       dos.writeInt(techFocus[i]);
       dos.writeDouble(techResearchPoint[i]);
     }
+    dos.writeBoolean(extendedTechLevelsEnabled);
 
   }
 
@@ -158,9 +198,11 @@ public class TechList {
   public TechList(final DataInputStream dis, final SpaceRace race)
       throws IOException {
     this.race = race;
-    techList = new TechListForLevel[TechType.values().length][MAX_TECH_LEVEL];
+    this.extendedTechLevelsEnabled = dis.readBoolean();
+    int maxLevel = extendedTechLevelsEnabled ? MAX_EXTENDED_TECH_LEVEL : MAX_TECH_LEVEL;
+    techList = new TechListForLevel[TechType.values().length][maxLevel];
     for (int i = 0; i < MAX_TECH_TYPES; i++) {
-      for (int j = 0; j < MAX_TECH_LEVEL; j++) {
+      for (int j = 0; j < maxLevel; j++) {
         techList[i][j] = new TechListForLevel(j + 1, TechType.values()[i], dis);
       }
     }
@@ -178,8 +220,9 @@ public class TechList {
    * @return True if found, otherwise false
    */
   public boolean isTech(final String techName) {
+    int maxLevel = getMaxTechLevel();
     for (int i = 0; i < MAX_TECH_TYPES; i++) {
-      for (int j = 0; j < MAX_TECH_LEVEL; j++) {
+      for (int j = 0; j < maxLevel; j++) {
         TechListForLevel tech = techList[i][j];
         if (tech.isTech(techName)) {
           return true;
@@ -199,6 +242,13 @@ public class TechList {
     }
     int index = tech.getType().getIndex();
     int lvl = tech.getLevel() - 1;
+    int maxLevel = getMaxTechLevel();
+    
+    // Don't add tech if level exceeds maximum
+    if (lvl >= maxLevel) {
+      return;
+    }
+    
     var listForLevel = techList[index][lvl];
     if (listForLevel.isTech(tech.getName())) {
       return;
@@ -209,8 +259,9 @@ public class TechList {
     if (isTechListForLevelFull(tech.getType(), lvl + 1)
         && lvl + 1 >= techLevels[index]) {
       techLevels[index] = lvl + 2;
-      if (techLevels[index] > 10) {
-        techLevels[index] = 10;
+      int maxAllowedLevel = extendedTechLevelsEnabled ? MAX_EXTENDED_TECH_LEVEL : MAX_TECH_LEVEL;
+      if (techLevels[index] > maxAllowedLevel) {
+        techLevels[index] = maxAllowedLevel;
       }
     }
   }
@@ -231,11 +282,12 @@ public class TechList {
   /**
    * Set Tech Level
    * @param type Tech type which is going to be set
-   * @param level Level must be between 1-10
+   * @param level Level must be between 1-20 (extended levels 11-20 when enabled)
    */
   public void setTechLevel(final TechType type, final int level) {
     int index = type.getIndex();
-    if (level >= 1 && level < 11 && index >= 0 && index < techLevels.length) {
+    int maxLevel = extendedTechLevelsEnabled ? MAX_EXTENDED_TECH_LEVEL : MAX_TECH_LEVEL;
+    if (level >= 1 && level <= maxLevel && index >= 0 && index < techLevels.length) {
       techLevels[index] = level;
     }
   }
@@ -248,7 +300,8 @@ public class TechList {
   public Tech[] getListForType(final TechType type) {
     ArrayList<Tech> list = new ArrayList<>();
     int index = type.getIndex();
-    for (int i = 0; i < MAX_TECH_LEVEL; i++) {
+    int maxLevel = getMaxTechLevel();
+    for (int i = 0; i < maxLevel; i++) {
       for (Tech tech : techList[index][i].getList()) {
         list.add(tech);
       }
@@ -706,12 +759,13 @@ public class TechList {
   /**
    * Get Tech list for certain tech type and level
    * @param type Tech Type to get the list
-   * @param level Level of tech list 1-10
+   * @param level Level of tech list 1-20 (extended levels 11-20 when enabled)
    * @return tech list as a tech array
    */
   public Tech[] getListForTypeAndLevel(final TechType type, final int level) {
     int levelIndex = level - 1;
-    if (levelIndex >= 10 || levelIndex < 0) {
+    int maxLevel = getMaxTechLevel();
+    if (levelIndex >= maxLevel || levelIndex < 0) {
       return new Tech[0];
     }
     ArrayList<Tech> list = new ArrayList<>();
@@ -725,12 +779,13 @@ public class TechList {
   /**
    * Get Tech list for certain tech type and level which are missing
    * @param type Tech Type to get the list
-   * @param level Level of tech list 1-10
+   * @param level Level of tech list 1-20 (extended levels 11-20 when enabled)
    * @return List of techs which are missing
    */
   public Tech[] getListMissingTech(final TechType type, final int level) {
     int levelIndex = level - 1;
-    if (levelIndex >= 10 || levelIndex < 0) {
+    int maxLevel = getMaxTechLevel();
+    if (levelIndex >= maxLevel || levelIndex < 0) {
       return new Tech[0];
     }
     Tech[] techGot = getListForTypeAndLevel(type, level);
@@ -761,8 +816,9 @@ public class TechList {
    */
   public Tech[] getRareTechs() {
     ArrayList<Tech> list = new ArrayList<>();
+    int maxLevel = getMaxTechLevel();
     for (int types = 0; types < MAX_TECH_TYPES; types++) {
-      for (int level = 0; level < MAX_TECH_LEVEL; level++) {
+      for (int level = 0; level < maxLevel; level++) {
         for (Tech tech : techList[types][level].getList()) {
           if (tech.isRareTech()) {
             list.add(tech);
@@ -776,7 +832,7 @@ public class TechList {
   /**
    * Is Tech list for certain level full
    * @param type Tech Type
-   * @param level Level of tech list 1-10
+   * @param level Level of tech list 1-20 (extended levels 11-20 when enabled)
    * @return true if full or false if not
    */
   public boolean isTechListForLevelFull(final TechType type, final int level) {
@@ -794,8 +850,9 @@ public class TechList {
    */
   public Tech[] getList() {
     ArrayList<Tech> list = new ArrayList<>();
+    int maxLevel = getMaxTechLevel();
     for (int j = 0; j < MAX_TECH_TYPES; j++) {
-      for (int i = 0; i < MAX_TECH_LEVEL; i++) {
+      for (int i = 0; i < maxLevel; i++) {
         for (Tech tech : techList[j][i].getList()) {
           list.add(tech);
         }
@@ -898,6 +955,7 @@ public class TechList {
   public Tech addNewRandomTech(final PlayerInfo info) {
     Tech tech = null;
     int loopCount = 0;
+    int maxLevel = getMaxTechLevel();
     while (tech == null && loopCount < 10) {
       loopCount++;
       int index = DiceGenerator.getRandom(0, 5);
@@ -905,7 +963,7 @@ public class TechList {
       int lvl = techLevels[index];
       tech = findRandomNewTech(type, lvl);
 
-      if (tech == null && lvl < MAX_TECH_LEVEL) {
+      if (tech == null && lvl < maxLevel) {
         techLevels[index] += 1;
       }
     }

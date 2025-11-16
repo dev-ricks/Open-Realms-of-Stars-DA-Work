@@ -85,6 +85,11 @@ public class Building extends Construction {
   /** Wild life power. */
   private int wildLifePower;
 
+  /** Required tech level for this building */
+  private int requiredTechLevel;
+  /** Is this an extended tech level building (11-20) */
+  private boolean isExtendedTechBuilding;
+
   /**
    * Construct building for planet
    * @param name Unique Building name
@@ -103,6 +108,8 @@ public class Building extends Construction {
     this.credBonus = 0;
     this.reseBonus = 0;
     this.materialBonus = 0;
+    this.requiredTechLevel = 1;
+    this.isExtendedTechBuilding = false;
     this.setProdCost(1);
     this.setMetalCost(1);
     this.maintenanceCost = 0;
@@ -117,6 +124,20 @@ public class Building extends Construction {
     this.setBroadcaster(false);
     this.setWildLifePower(0);
     this.setAncientArtifactResearch(0);
+  }
+
+  /**
+   * Construct building for planet with tech level
+   * @param name Unique Building name
+   * @param iconId ID of Icon to use next to the building
+   * @param type BuildingType
+   * @param techLevel Required technology level
+   */
+  public Building(final String name, final String iconId,
+      final BuildingType type, final int techLevel) {
+    this(name, iconId, type);
+    this.requiredTechLevel = techLevel;
+    this.isExtendedTechBuilding = techLevel > 10;
   }
 
   /**
@@ -654,5 +675,108 @@ public class Building extends Construction {
    */
   public void setAncientArtifactResearch(final int ancientArtifactResearch) {
     this.ancientArtifactResearch = ancientArtifactResearch;
+  }
+
+  /**
+   * Get required tech level for this building
+   * @return Required tech level
+   */
+  public int getRequiredTechLevel() {
+    return requiredTechLevel;
+  }
+
+  /**
+   * Set required tech level for this building
+   * @param requiredTechLevel Required tech level
+   */
+  public void setRequiredTechLevel(final int requiredTechLevel) {
+    this.requiredTechLevel = requiredTechLevel;
+    this.isExtendedTechBuilding = requiredTechLevel > 10;
+  }
+
+  /**
+   * Check if this is an extended tech level building (11-20)
+   * @return True if extended tech building
+   */
+  public boolean isExtendedTechBuilding() {
+    return isExtendedTechBuilding;
+  }
+
+  /**
+   * Calculate scaled cost based on tech level
+   * @return Scaled metal cost
+   */
+  public int getScaledMetalCost() {
+    if (!isExtendedTechBuilding) {
+      return getMetalCost();
+    }
+    
+    double multiplier = ExtendedBuildingFactory.getCostMultiplier(requiredTechLevel, type);
+    return (int) (getMetalCost() * multiplier);
+  }
+
+  /**
+   * Calculate scaled production cost based on tech level
+   * @return Scaled production cost
+   */
+  public int getScaledProdCost() {
+    if (!isExtendedTechBuilding) {
+      return getProdCost();
+    }
+    
+    double multiplier = ExtendedBuildingFactory.getCostMultiplier(requiredTechLevel, type);
+    return (int) (getProdCost() * multiplier);
+  }
+
+  /**
+   * Get scaled maintenance cost based on tech level
+   * @return Scaled maintenance cost
+   */
+  public double getScaledMaintenanceCost() {
+    if (!isExtendedTechBuilding) {
+      return getMaintenanceCost();
+    }
+    
+    double multiplier = 1.0 + (requiredTechLevel - 11) * 0.1;
+    return getMaintenanceCost() * multiplier;
+  }
+
+  /**
+   * Check if building can be built with current tech level
+   * @param currentTechLevel Current technology level
+   * @return True if building can be built
+   */
+  public boolean canBuildWithTechLevel(int currentTechLevel) {
+    return requiredTechLevel <= currentTechLevel;
+  }
+
+  /**
+   * Get building tier description based on tech level
+   * @return Tier description
+   */
+  public String getTierDescription() {
+    if (!isExtendedTechBuilding) {
+      return "Standard";
+    }
+    
+    switch (requiredTechLevel) {
+      case 11:
+      case 12:
+        return "Advanced";
+      case 13:
+      case 14:
+        return "Elite";
+      case 15:
+      case 16:
+        return "Superior";
+      case 17:
+      case 18:
+        return "Mega";
+      case 19:
+      case 20:
+        return "Ultimate";
+      default:
+        return "Extended";
+    }
   }
 }
